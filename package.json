@@ -1,0 +1,41 @@
+{
+    "name": "near-nft-telegram-bot",
+    "version": "1.0.0",
+    "license": "ISC",
+    "dependencies": {
+        "@sealsystems/state-machine": "^0.2.7",
+        "bn": "^1.0.5",
+        "dotenv": "^10.0.0",
+        "mongodb": "^4.1.1",
+        "mongoose": "^6.0.5",
+        "near-api-js": "^0.36.3",
+        "near-seed-phrase": "^0.1.1",
+        "node-telegram-bot-api": "^0.54.0",
+        "nodejs-state-machine": "^2.0.0",
+        "nodemon": "^2.0.12",
+        "parcel": "^2.0.0-beta.1",
+        "react": "^17.0.1",
+        "react-dom": "^17.0.1",
+        "telegraf": "^4.4.2"
+    },
+    "devDependencies": {
+        "eslint": "^7.14.0",
+        "javascript-state-machine": "^3.1.0",
+        "jest": "^26.6.3",
+        "jest-environment-uint8array": "^1.0.0",
+        "node-fetch": "^2.6.1",
+        "rimraf": "^3.0.2",
+        "sass": "^1.32.8"
+    },
+    "browserslist": [
+        "last 2 Chrome versions"
+    ],
+    "scripts": {
+        "build:contracts": "(cd contracts/nft-simple && ./build.sh) && (cd contracts/market-simple && ./build.sh)",
+        "dev:deploy": "yarn build:contracts && rm -rf neardev && (near dev-deploy || exit 0)",
+        "start:bot": "nodemon tg_bot/app.js"
+    },
+    "jest": {
+        "testEnvironment": "jest-environment-uint8array"
+    }
+}
