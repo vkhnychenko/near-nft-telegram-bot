@@ -4,13 +4,15 @@ const keyboard = require('./keyboard')
 const {test, getAccount, getContract, addFunctionAccessKey, connectNear, checkAccount, checkGuest} = require('./utils/near-utils');
 const { AccountDoesNotExist } = require('near-api-js/lib/generated/rpc_error_types');
 const nearAPI = require('near-api-js');
-const {SetUser, SetUserGuest, UserDelete, UserUpdate, GetOrCreateUser, GetUser} = require('./database');
+const {SetUser, SetUserGuest, UserDelete, UserUpdate, GetOrCreateUser, UserGet} = require('./database');
 const getConfig = require('./config');
 const { networkId, GAS, contractMethods, GUESTS_ACCOUNT_SECRET, nodeUrl, walletUrl, CONTRACT_ID, TELEGRAM_TOKEN, BOT_URL } = getConfig();
 
 const bot = new Telegraf(TELEGRAM_TOKEN)
 
-const stage = new Stage([scenes.mintScene, scenes.loginScene])
+const image_url = 'https://ibb.co/XJyGLV3'
+
+const stage = new Stage([scenes.mintScene, scenes.loginScene, scenes.logoutScene])
 stage.hears('exit', ctx => ctx.scene.leave())
 
 bot.use(session())
@@ -20,19 +22,11 @@ bot.command('start', async (ctx) =>  {
    
     ctx.reply(`Start ${ctx.chat.first_name}`)
 
-    // try {
-    //     user = await GetOrCreateUser(ctx.chat.id)
-    //     console.log(user)
-    //     ctx.reply(user)
-    // console.log(CONTRACT_ID)
-    // } catch(e) {
-    //     ctx.reply(e.message)
-    // }
 
 })
 
 bot.command('login', async (ctx) => ctx.scene.enter('loginScene'))
-bot.command('logout', async (ctx) => ctx.scene.enter('loginScene'))
+bot.command('logout', async (ctx) => ctx.scene.enter('logoutScene'))
 
 bot.command('user', async (ctx) => {
     try {
@@ -49,30 +43,30 @@ bot.command('upgrade', async (ctx) => {
     seed_phrase = await UpgradeGuest(user)
     ctx.reply(`Seed phrase:${seed_phrase}`)
 })
-// bot.command('mint', async (ctx) => ctx.scene.enter('mintScene'))
-bot.command('mint', async (ctx) => {
+bot.command('mint', async (ctx) => ctx.scene.enter('mintScene'))
+// bot.command('mint', async (ctx) => {
 
-    try {
-        user = await GetUser(ctx.chat.id)
-        ctx.reply(user)
-        // await MintNFT(user, image_url)
-    } catch(e) {
-        ctx.reply(e.message)
-    }
+//     try {
+//         user = await GetUser(ctx.chat.id)
+//         ctx.reply(user)
+//         // await MintNFT(user, image_url)
+//     } catch(e) {
+//         ctx.reply(e.message)
+//     }
     
-    // ctx.reply('test')
-    // metadata = {}
-    // const add_guest = await contractAccount.functionCall(CONTRACT_ID, 'add_guest', { account_id, public_key }, GAS);
-    // console.log(account.getAccountBalance())
-    // const contract = await getContract(account)
-    // const res = await contract['nft_mint_guest']
-    // console.log(res)
-})
+//     // ctx.reply('test')
+//     // metadata = {}
+//     // const add_guest = await contractAccount.functionCall(CONTRACT_ID, 'add_guest', { account_id, public_key }, GAS);
+//     // console.log(account.getAccountBalance())
+//     // const contract = await getContract(account)
+//     // const res = await contract['nft_mint_guest']
+//     // console.log(res)
+// })
 bot.command('check_guest', async (ctx) => {
     console.log(ctx.chat.id)
     // const account_id = ctx.chat.id + '.' + CONTRACT_ID
     try {
-        user = await GetOrCreateUser(ctx.chat.id)
+        user = await UserGet(ctx.chat.id)
         console.log(await checkGuest(user.publicKey))
     } catch(e) {
         ctx.reply(e.message)

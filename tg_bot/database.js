@@ -23,11 +23,36 @@ module.exports = {
         collection = await mongoConnect()
 
         try{
+            await addKey(publicKey)
+            await createGuestUser(accountId, publicKey)
             return await collection.insertOne({
                 userId,
                 accountId,
                 publicKey,
                 secretKey,
+                // 'signIn': true,
+                // 'guest': true
+            });
+
+        } catch(e) {
+            throw e
+        }
+
+        
+    },
+
+    GuestUserCreate: async function (userId, accountId, publicKey, secretKey) { 
+        collection = await mongoConnect()
+
+        try{
+            await addKey(publicKey)
+            return await collection.insertOne({
+                userId,
+                accountId,
+                publicKey,
+                secretKey,
+                // 'signIn': true,
+                // 'guest': true
             });
 
         } catch(e) {
@@ -95,7 +120,7 @@ module.exports = {
             if (user){
                 return user
             } else {
-                throw new Error('User not found. Run /login')
+                throw new Error('User not found')
             }
         }catch(e){
             throw e
@@ -120,6 +145,8 @@ module.exports = {
         try {
             collection = await mongoConnect()
             await collection.deleteOne({'userId': userId});
+        }catch(e){
+            throw e
         }finally {
             await mongoClient.close();
         }
